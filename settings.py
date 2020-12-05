@@ -1,3 +1,4 @@
+from middleware import demo
 from views import index, contacts
 
 urls = {
@@ -6,5 +7,5 @@ urls = {
 }
 
 middleware = [
-
+    demo
 ]

@@ -1,5 +1,7 @@
+from framework.utils import url_check
 from settings import urls, middleware
 from views import not_found
+from pprint import pprint
 
 
 class Application:
@@ -8,22 +10,28 @@ class Application:
         self.middleware = middleware
 
     def __call__(self, environ, start_response):
-        # pprint(environ)
+        pprint(environ)
 
-        request = {}
-        path = self.url_check(environ['PATH_INFO'])
-        if path in self.urls:
-            code, page = urls[path](request)
-
+        request = self.request_init(environ)
+        if request['PATH'] in self.urls:
             for item in middleware:
                 item(request)
-
+            code, page = urls[request['PATH']](request)
         else:
             code, page = not_found(request)
+
+        print("request: ")
+        pprint(request)
 
         start_response(code, [('Content-Type', 'text/html')])
         return [page.encode(encoding='utf-8')]
 
-    @staticmethod
-    def url_check(url: str):
-        return url if url[-1] == '/' else url + '/'
+    def request_init(self, env, request=None):
+        if request is None:
+            request = {}
+
+        request['PATH'] = url_check(env['PATH_INFO'])
+        request['ARGS'] = env['QUERY_STRING']
+        request['METHOD'] = env['REQUEST_METHOD']
+        request['BODY'] = env['wsgi.input'].read().decode(encoding='utf=8')
+        return request

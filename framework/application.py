@@ -26,6 +26,12 @@ class Application:
         start_response(code, [('Content-Type', 'text/html')])
         return [page.encode(encoding='utf-8')]
 
+    def add_route(self, path):
+        def inner(view):
+            self.urls[path] = view
+
+        return inner
+
     def request_init(self, env, request=None):
         if request is None:
             request = {}
@@ -48,3 +54,27 @@ class Application:
             res = {}
 
         return res
+
+
+class DebugApplication(Application):
+
+    def __init__(self, urls, middleware):
+        self.application = Application(urls, middleware)
+        super().__init__(urls, middleware)
+
+    def __call__(self, env, start_response):
+        # super().__call__(env, start_response)
+        print("\n DEBUG: \n")
+        pprint(env)
+        return self.application(env, start_response)
+
+
+class MockApplication(Application):
+
+    def __init__(self, urlpatterns, front_controllers):
+        self.application = Application(urlpatterns, front_controllers)
+        super().__init__(urlpatterns, front_controllers)
+
+    def __call__(self, env, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return [b'Hello from mock server!']

@@ -5,7 +5,7 @@
     <ul>
         {% for c in object_list %}
             <li>
-                {{ c.name }}: количество курсов {{ c.count_courses() }}
+                {{ c.name }}: общее количество курсов {{ c.count_courses() }}
             </li>
         {% endfor %}
     </ul>

@@ -2,9 +2,26 @@ from copy import deepcopy
 from abc import ABC, abstractmethod
 
 
+# prototype pattern
 class ProtoMixin:
     def copy(self):
         return deepcopy(self)
+
+
+# singleton
+class NamedSingleton(type):
+    def __init__(cls, name, bases, attrs, **kwargs):
+        super().__init__(name, bases, attrs)
+        cls.__instance = {}
+
+    def __call__(cls, *args, **kwargs):
+        name = args[0] if args else kwargs['name']
+
+        if name in cls.__instance:
+            return cls.__instance[name]
+        else:
+            cls.__instance[name] = super().__call__(*args, **kwargs)
+            return cls.__instance[name]
 
 
 class AbstractUser(ABC):

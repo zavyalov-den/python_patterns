@@ -25,6 +25,10 @@ class NamedSingleton(type):
 
 
 class AbstractUser(ABC):
+
+    def __init__(self, username):
+        self.username = username
+
     @staticmethod
     def login(username, password):
         pass
@@ -35,10 +39,12 @@ class AbstractUser(ABC):
 
 
 class Student(AbstractUser):
+    courses = []
     pass
 
 
 class Teacher(AbstractUser):
+    courses = []
     pass
 
 
@@ -49,15 +55,27 @@ class UserFactory:
     }
 
     @classmethod
-    def create(cls, type: str):
-        return cls._types[type.lower()]()
+    def create(cls, type: str, username):
+        return cls._types[type.lower()](username)
 
 
 class Course(ProtoMixin):
+
     def __init__(self, name, category):
-        self.category = category
         self.name = name
+        self.category = category
         self.category.courses.append(self)
+        self.students = []
+        super().__init__()
+
+    def __getitem__(self, item):
+        return self.students[item]
+
+    def add_student(self, student: Student):
+        self.students.append(student)
+        student.courses.append(self)
+        # todo: implement observer
+        # self.notify()
 
 
 class Category(ProtoMixin):
@@ -108,8 +126,10 @@ class TrainingApp:
     courses = []
     categories = []
 
-    def create_user(self, type):
-        UserFactory.create(type)
+    def create_user(self, type, name):
+        user = UserFactory.create(type, name)
+        self.students.append(user)
+        return user
 
     def create_category(self, name, category=None):
         cat = Category(name, category)
@@ -139,3 +159,9 @@ class TrainingApp:
             if c.name == name:
                 return c
         raise Exception('Course does not exist.')
+
+    def get_student_by_name(self, name):
+        for c in self.students:
+            if c.username == name:
+                return c
+        raise Exception('Student does not exist.')

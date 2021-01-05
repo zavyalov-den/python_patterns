@@ -1,4 +1,5 @@
 from debug import debug
+from framework.cbv import ListView, CreateView
 from framework.templates import render_from_file
 from framework.utils import parse_query_string, parse_body_json
 from models import TrainingApp
@@ -79,3 +80,34 @@ def create_course(request):
 def not_found(request):
     page = render_from_file('404.html', request)
     return '404 NOT FOUND', page
+
+
+class StudentListView(ListView):
+    queryset = courses_app.students
+    template_name = 'student_list.html'
+
+
+class StudentCreateView(CreateView):
+    template_name = 'student_create.html'
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        obj = courses_app.create_user('student', name)
+        # courses_app.students.append(obj)
+
+
+class AddStudentByCourseCreateView(CreateView):
+    template_name = 'student_add.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['courses'] = courses_app.courses
+        context['students'] = courses_app.students
+        return context
+
+    def create_obj(self, data: dict):
+        course_name = data['course_name']
+        course = courses_app.get_course_by_name(course_name)
+        student_name = data['student_name']
+        student = courses_app.get_student_by_name(student_name)
+        course.add_student(student)

@@ -1,8 +1,10 @@
 from copy import deepcopy
 from abc import ABC, abstractmethod
 
-
 # prototype pattern
+from framework.uow import DomainObject
+
+
 class ProtoMixin:
     def copy(self):
         return deepcopy(self)
@@ -38,9 +40,10 @@ class AbstractUser(ABC):
         pass
 
 
-class Student(AbstractUser):
-    courses = []
-    pass
+class Student(AbstractUser, DomainObject):
+    def __init__(self, username):
+        self.username = username
+        self.courses = []
 
 
 class Teacher(AbstractUser):

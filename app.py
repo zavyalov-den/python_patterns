@@ -1,9 +1,14 @@
 from framework.templates import render_from_file
+from framework.uow import UnitOfWork
 from framework.utils import parse_body_json
+from mappers import MapperRegistry
 from settings import urls, middleware
 from framework.application import Application, MockApplication, DebugApplication
 
 app = Application(urls, middleware)
+
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 
 # app = DebugApplication(urls, middleware)

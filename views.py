@@ -2,6 +2,7 @@ from debug import debug
 from framework.cbv import ListView, CreateView
 from framework.templates import render_from_file
 from framework.utils import parse_query_string, parse_body_json
+from mappers import MapperRegistry, UnitOfWork
 from models import TrainingApp
 
 courses_app = TrainingApp()
@@ -83,8 +84,12 @@ def not_found(request):
 
 
 class StudentListView(ListView):
-    queryset = courses_app.students
+    # queryset = courses_app.students
     template_name = 'student_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('student')
+        return mapper.all()
 
 
 class StudentCreateView(CreateView):
@@ -94,6 +99,9 @@ class StudentCreateView(CreateView):
         name = data['name']
         obj = courses_app.create_user('student', name)
         # courses_app.students.append(obj)
+
+        obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 class AddStudentByCourseCreateView(CreateView):

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Courses</h1>
+    <ul>
+        {% for c in object_list %}
+            <li>
+                {#                {{ c.name }} <span><a href="/copy-course/?name={{ c.name }}">Copy</a></span>#}
+                {{ c.name }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

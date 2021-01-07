@@ -10,4 +10,4 @@ def render_from_file(filename, request={}, path='templates/', *args, **kwargs):
 
     # template = Template(contents)
     template = Environment(loader=FileSystemLoader('templates/')).from_string(contents)
-    return template.render(request)
+    return template.render(request, **kwargs)

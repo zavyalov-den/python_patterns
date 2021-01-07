@@ -1,9 +1,10 @@
 import sqlite3
 
+from db.db import DB_NAME
 from framework.uow import UnitOfWork
 from models import Student
 
-connection = sqlite3.connect('data.db')
+connection = sqlite3.connect(DB_NAME)
 
 
 class RecordNotFoundException(Exception):

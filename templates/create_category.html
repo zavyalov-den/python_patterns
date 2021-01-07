@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create category</h1>
+    <form method="post">
+        <input type="text" name="name" placeholder="Category name">
+        <select size="3" name="category_id">
+            {% for c in categories %}
+                <option value="{{ c.id }}">{{ c.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Save</button>
+    </form>
+{% endblock %}

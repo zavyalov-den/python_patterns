@@ -33,5 +33,18 @@ class Application:
         request['PATH'] = url_check(env['PATH_INFO'])
         request['ARGS'] = env['QUERY_STRING']
         request['METHOD'] = env['REQUEST_METHOD']
-        request['BODY'] = env['wsgi.input'].read().decode(encoding='utf=8')
+        request['DATA'] = self.data_to_dict(env['wsgi.input'].read().decode(encoding='utf=8'))
         return request
+
+    def data_to_dict(self, data):
+        print('raw data: \n', data)
+        res = {}
+        try:
+            arr = data.split('&')
+            for item in arr:
+                key, value = item.split('=')
+                res[key] = value
+        except:
+            res = {}
+
+        return res
